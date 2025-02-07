@@ -9,23 +9,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.crumb.fiftheditionsheet.Greeting
-import com.crumb.fiftheditionsheet.model.rules.character.AbilityScores
-import com.crumb.fiftheditionsheet.model.rules.character.Character
-import com.crumb.fiftheditionsheet.model.rules.character.CharacterClass
-import com.crumb.fiftheditionsheet.model.rules.character.CharacterState
-import com.crumb.fiftheditionsheet.model.rules.character.CreatureSize
-import com.crumb.fiftheditionsheet.model.rules.character.Inventory
-import com.crumb.fiftheditionsheet.model.rules.character.Languages
-import com.crumb.fiftheditionsheet.model.rules.character.Race
-import com.crumb.fiftheditionsheet.model.rules.character.Skills
-import com.crumb.fiftheditionsheet.model.rules.character.Spells
-import com.crumb.fiftheditionsheet.model.rules.general.D8
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crumb.fiftheditionsheet.model.rules.repository.CharacterSheetStateRepository
+import com.crumb.fiftheditionsheet.viewmodel.CharacterSheetViewState
+import com.crumb.fiftheditionsheet.viewmodel.DefaultSheetViewModel
+import com.crumb.fiftheditionsheet.viewmodel.EmptyCharacterSheetViewState
+import com.crumb.fiftheditionsheet.viewmodel.MainCharacterSheetViewState
+import org.orbitmvi.orbit.compose.collectAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,48 +30,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DefaultCharacterView()
+                    val defaultSheetViewModel = viewModel<DefaultSheetViewModelHost>()
+                    defaultSheetViewModel.defaultSheetViewModel.characterSheetViewState()
+                    val state by defaultSheetViewModel.collectAsState()
+                    CharacterView(state)
                 }
             }
         }
     }
 }
 
-fun testCharacter() = Character(
-    name = "Crumb",
-    height = 65,
-    weight = 115,
-    speed = 60,
-    race = Race("Elf"),
-    age = 113,
-    languages = Languages(),
-    hitPointMax = 63,
-    hitDiceQuantity = 1,
-    hitDie = D8,
-    abilityScores = AbilityScores(
-        dexterity = 14,
-        strength = 9,
-        charisma = 18,
-        constitution = 10,
-        wisdom = 14,
-        intelligence = 12
-    ),
-    spells = Spells(),
-    size = CreatureSize(),
-    classLevels = (1..7).map { CharacterClass("Bard", ) }.plus(CharacterClass("Cleric")),
-    skills = Skills(emptyList())
-)
+@Composable
+fun CharacterView(state: CharacterSheetViewState) {
+    when(state) {
+        EmptyCharacterSheetViewState -> EmptyCharacterView()
+        is MainCharacterSheetViewState -> DefaultCharacterView(state)
+    }
+}
 
 @Composable
-@Preview
-fun DefaultCharacterView() {
-    val character = testCharacter()
-    val characterState = CharacterState(
-        character = character,
-        inventory = Inventory(),
-        currentHitPoints = 63,
-        armorClass = 14
-    )
+fun DefaultCharacterView(state: MainCharacterSheetViewState) {
+    val characterState = state.characterState
     Column {
         Row(modifier = Modifier.fillMaxSize()) {
             Text(
@@ -111,9 +84,12 @@ fun DefaultCharacterView() {
                 text = levels,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.weight(1f),
-                autoSize
             )
         }
 
     }
+}
+
+@Composable
+fun EmptyCharacterView() {
 }

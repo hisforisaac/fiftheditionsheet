@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "com.crumb.fiftheditionsheet.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.crumb.fiftheditionsheet.android"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -38,9 +38,20 @@ android {
 
 dependencies {
     implementation(projects.shared)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
+    val composeBom = platform("androidx.compose:compose-bom:2025.01.01")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    implementation(libs.androidx.material3)
+    // Android Studio Preview support
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+    // Optional - Integration with activities
     implementation(libs.androidx.activity.compose)
-    debugImplementation(libs.compose.ui.tooling)
+    // Optional - Integration with ViewModels
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.orbit.compose)
+    implementation(libs.orbit.viewmodel)
+
 }
