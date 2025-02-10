@@ -6,7 +6,7 @@ data class Character(
     val name: String,
     val height: Int,
     val weight: Int,
-    val speed: Int,
+    val baseSpeed: Int,
     val race: Race,
     val age: Int,
     val languages: Languages,
@@ -16,6 +16,6 @@ data class Character(
     val abilityScores: AbilityScores,
     val spells: Spells,
     val size: CreatureSize,
-    val classLevels: List<CharacterClass>,
+    val classLevels: List<ClassLevel>,
     val skills: Skills
 )
