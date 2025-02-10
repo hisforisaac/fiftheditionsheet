@@ -7,4 +7,5 @@ data class ValidCharacterState(
     val inventory: Inventory,
     val currentHitPoints: Int,
     val armorClass: Int,
+    val skillModifiers: SkillModifiers,
 ): CharacterState()
